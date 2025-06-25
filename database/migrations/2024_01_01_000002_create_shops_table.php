@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->enum('subscription_status', ['active', 'inactive', 'cancelled', 'past_due'])->default('inactive');
             $table->string('stripe_account_id')->nullable();
+            $table->boolean('stripe_account_charges_enabled')->default(false);
+            $table->boolean('stripe_account_payouts_enabled')->default(false);
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
     }

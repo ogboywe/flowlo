@@ -19,6 +19,10 @@ return new class extends Migration
             $table->decimal('total_price', 8, 2);
             $table->text('notes')->nullable();
             $table->string('stripe_payment_intent_id')->nullable();
+            $table->boolean('payout_processed')->default(false);
+            $table->timestamp('payout_processed_at')->nullable();
+            $table->decimal('refund_amount', 8, 2)->nullable();
+            $table->text('refund_reason')->nullable();
             $table->timestamps();
         });
     }

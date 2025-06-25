@@ -20,12 +20,19 @@ class Booking extends Model
         'total_price',
         'notes',
         'stripe_payment_intent_id',
+        'payout_processed',
+        'payout_processed_at',
+        'refund_amount',
+        'refund_reason',
     ];
 
     protected $casts = [
         'booking_datetime' => 'datetime',
         'status' => BookingStatus::class,
         'total_price' => 'decimal:2',
+        'payout_processed' => 'boolean',
+        'payout_processed_at' => 'datetime',
+        'refund_amount' => 'decimal:2',
     ];
 
     public function client()

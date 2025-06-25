@@ -32,7 +32,33 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
     Route::get('/dashboard/recent-bookings', [DashboardController::class, 'recentBookings']);
+
+    Route::prefix('admin')->group(function () {
+        Route::get('/pending-shops', [App\Http\Controllers\AdminController::class, 'pendingShops']);
+        Route::post('/shops/{shop}/approve', [App\Http\Controllers\AdminController::class, 'approveShop']);
+        Route::post('/shops/{shop}/reject', [App\Http\Controllers\AdminController::class, 'rejectShop']);
+        Route::get('/shops', [App\Http\Controllers\AdminController::class, 'allShops']);
+        Route::get('/users', [App\Http\Controllers\AdminController::class, 'allUsers']);
+        Route::get('/stats', [App\Http\Controllers\AdminController::class, 'platformStats']);
+    });
+
+    Route::prefix('barber')->group(function () {
+        Route::post('/subscription', [App\Http\Controllers\BarberSubscriptionController::class, 'createSubscription']);
+        Route::get('/subscription', [App\Http\Controllers\BarberSubscriptionController::class, 'getSubscription']);
+        Route::delete('/subscription', [App\Http\Controllers\BarberSubscriptionController::class, 'cancelSubscription']);
+        Route::put('/subscription/payment-method', [App\Http\Controllers\BarberSubscriptionController::class, 'updatePaymentMethod']);
+        Route::get('/subscription/status', [App\Http\Controllers\BarberSubscriptionController::class, 'getSubscriptionStatus']);
+    });
+
+    Route::prefix('payments')->group(function () {
+        Route::post('/create-intent', [App\Http\Controllers\PaymentController::class, 'createPaymentIntent']);
+        Route::post('/confirm', [App\Http\Controllers\PaymentController::class, 'confirmPayment']);
+        Route::post('/refund', [App\Http\Controllers\PaymentController::class, 'processRefund']);
+        Route::post('/payout', [App\Http\Controllers\PaymentController::class, 'processPayout']);
+    });
 });
 
 Route::get('/public/shops', [ShopController::class, 'publicIndex']);
 Route::get('/public/shops/{shop}', [ShopController::class, 'publicShow']);
+
+Route::post('/stripe/webhook', [App\Http\Controllers\StripeWebhookController::class, 'handleWebhook']);

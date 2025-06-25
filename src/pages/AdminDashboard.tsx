@@ -24,35 +24,35 @@ const AdminDashboard = () => {
 
   const { data: shopsData, isLoading: shopsLoading } = useQuery({
     queryKey: ['admin-shops'],
-    queryFn: () => fetch('/api/admin/shops', {
+    queryFn: () => fetch('http://localhost:8000/api/admin/shops', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     }).then(res => res.json())
   })
 
   const { data: pendingShopsData, isLoading: pendingLoading } = useQuery({
     queryKey: ['admin-pending-shops'],
-    queryFn: () => fetch('/api/admin/pending-shops', {
+    queryFn: () => fetch('http://localhost:8000/api/admin/shops/pending', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     }).then(res => res.json())
   })
 
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ['admin-stats'],
-    queryFn: () => fetch('/api/admin/stats', {
+    queryFn: () => fetch('http://localhost:8000/api/admin/stats', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     }).then(res => res.json())
   })
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ['admin-users'],
-    queryFn: () => fetch('/api/admin/users', {
+    queryFn: () => fetch('http://localhost:8000/api/admin/users', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     }).then(res => res.json())
   })
 
   const approveShopMutation = useMutation({
     mutationFn: (shopId: string) => 
-      fetch(`/api/admin/shops/${shopId}/approve`, {
+      fetch(`http://localhost:8000/api/admin/shops/${shopId}/approve`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
 
   const rejectShopMutation = useMutation({
     mutationFn: ({ shopId, reason }: { shopId: string; reason: string }) => 
-      fetch(`/api/admin/shops/${shopId}/reject`, {
+      fetch(`http://localhost:8000/api/admin/shops/${shopId}/reject`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

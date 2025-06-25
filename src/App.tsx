@@ -187,6 +187,22 @@ function App() {
               </Layout>
             </ProtectedRoute>
           } />
+          
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <Layout>
+                <AdminDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/barber" element={
+            <ProtectedRoute allowedRoles={['barber']}>
+              <Layout>
+                <BarberDashboard />
+              </Layout>
+            </ProtectedRoute>
+          } />
         </Routes>
       </Router>
     </AuthProvider>

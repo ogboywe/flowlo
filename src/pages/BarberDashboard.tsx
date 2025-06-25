@@ -25,21 +25,21 @@ const BarberDashboard = () => {
 
   const { data: bookingsData, isLoading } = useQuery({
     queryKey: ['bookings'],
-    queryFn: () => fetch('/api/bookings', {
+    queryFn: () => fetch('http://localhost:8000/api/bookings', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     }).then(res => res.json())
   })
 
   const { data: subscriptionData, isLoading: subscriptionLoading } = useQuery({
     queryKey: ['barber-subscription'],
-    queryFn: () => fetch('/api/barber/subscription', {
+    queryFn: () => fetch('http://localhost:8000/api/barber/subscription', {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     }).then(res => res.json())
   })
 
   const createSubscriptionMutation = useMutation({
     mutationFn: () => 
-      fetch('/api/barber/subscription', {
+      fetch('http://localhost:8000/api/barber/subscription', {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

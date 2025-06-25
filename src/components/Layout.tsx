@@ -1,141 +1,101 @@
-import React, { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon, UserIcon } from '@heroicons/react/24/outline'
-import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '../App'
+import { Outlet, Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import { Button } from './ui/button'
+import { 
+  Calendar, 
+  Home, 
+  LogOut, 
+  Settings, 
+  Store,
+  Users,
+  BarChart3
+} from 'lucide-react'
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Layout = () => {
   const { user, logout } = useAuth()
-  const location = useLocation()
+  const navigate = useNavigate()
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/dashboard' },
-    { name: 'Bookings', href: '/bookings', current: location.pathname === '/bookings' },
-    { name: 'Shops', href: '/shops', current: location.pathname === '/shops' },
-  ]
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
-  const userNavigation = [
-    { name: 'Your Profile', href: '#' },
-    { name: 'Settings', href: '#' },
-    { name: 'Sign out', href: '#', onClick: logout },
-  ]
+  const getNavItems = () => {
+    const baseItems = [
+      { to: '/dashboard', icon: Home, label: 'Dashboard' },
+      { to: '/bookings', icon: Calendar, label: 'Bookings' },
+    ]
+
+    if (user?.role === 'barber') {
+      return [
+        { to: '/barber/dashboard', icon: Home, label: 'Dashboard' },
+        { to: '/bookings', icon: Calendar, label: 'My Bookings' },
+      ]
+    }
+
+    if (user?.role === 'shop_owner') {
+      return [
+        { to: '/owner/dashboard', icon: Home, label: 'Dashboard' },
+        { to: '/bookings', icon: Calendar, label: 'All Bookings' },
+        { to: '/shops', icon: Store, label: 'My Shops' },
+        { to: '/staff', icon: Users, label: 'Staff' },
+        { to: '/analytics', icon: BarChart3, label: 'Analytics' },
+      ]
+    }
+
+    if (user?.role === 'admin') {
+      return [
+        { to: '/admin/dashboard', icon: Home, label: 'Admin Dashboard' },
+        { to: '/shops', icon: Store, label: 'All Shops' },
+        { to: '/users', icon: Users, label: 'Users' },
+        { to: '/analytics', icon: BarChart3, label: 'Platform Analytics' },
+      ]
+    }
+
+    return baseItems
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Disclosure as="nav" className="bg-white shadow-sm border-b border-gray-200">
-        {({ open }) => (
-          <>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 justify-between">
-                <div className="flex">
-                  <div className="flex flex-shrink-0 items-center">
-                    <Link to="/" className="text-2xl font-bold text-primary-600">
-                      Flowlo
-                    </Link>
-                  </div>
-                  <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                    {navigation.map((item) => (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className={`${
-                          item.current
-                            ? 'border-primary-500 text-gray-900'
-                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                        } inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium`}
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-                <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                  <Menu as="div" className="relative ml-3">
-                    <div>
-                      <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">Open user menu</span>
-                        {user?.avatar ? (
-                          <img className="h-8 w-8 rounded-full" src={user.avatar} alt="" />
-                        ) : (
-                          <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                            <UserIcon className="h-5 w-5 text-primary-600" />
-                          </div>
-                        )}
-                      </Menu.Button>
-                    </div>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-200"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                          <div className="font-medium">{user?.name}</div>
-                          <div className="text-gray-500">{user?.email}</div>
-                        </div>
-                        {userNavigation.map((item) => (
-                          <Menu.Item key={item.name}>
-                            {({ active }) => (
-                              <button
-                                onClick={item.onClick}
-                                className={`${
-                                  active ? 'bg-gray-100' : ''
-                                } block w-full text-left px-4 py-2 text-sm text-gray-700`}
-                              >
-                                {item.name}
-                              </button>
-                            )}
-                          </Menu.Item>
-                        ))}
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                </div>
-                <div className="-mr-2 flex items-center sm:hidden">
-                  <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
-                    <span className="absolute -inset-0.5" />
-                    <span className="sr-only">Open main menu</span>
-                    {open ? (
-                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                    ) : (
-                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                    )}
-                  </Disclosure.Button>
-                </div>
-              </div>
-            </div>
-
-            <Disclosure.Panel className="sm:hidden">
-              <div className="space-y-1 pb-3 pt-2">
-                {navigation.map((item) => (
-                  <Disclosure.Button
-                    key={item.name}
-                    as={Link}
-                    to={item.href}
-                    className={`${
-                      item.current
-                        ? 'border-primary-500 bg-primary-50 text-primary-700'
-                        : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
-                    } block border-l-4 py-2 pl-3 pr-4 text-base font-medium`}
-                  >
-                    {item.name}
-                  </Disclosure.Button>
-                ))}
-              </div>
-            </Disclosure.Panel>
-          </>
-        )}
-      </Disclosure>
-
-      <main className="py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {children}
+    <div className="flex h-screen bg-gray-100">
+      <aside className="w-64 bg-white shadow-md">
+        <div className="p-6">
+          <h1 className="text-2xl font-bold text-gray-800">Flowlo</h1>
+          <p className="text-sm text-gray-600">Barber Booking Platform</p>
         </div>
+        
+        <nav className="mt-6">
+          {getNavItems().map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
+            >
+              <item.icon className="w-5 h-5 mr-3" />
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="absolute bottom-0 w-64 p-6 border-t">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-800">{user?.name}</p>
+              <p className="text-xs text-gray-600 capitalize">{user?.role}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLogout}
+              className="text-gray-600 hover:text-red-600"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </aside>
+
+      <main className="flex-1 overflow-auto">
+        <Outlet />
       </main>
     </div>
   )
